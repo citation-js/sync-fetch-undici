@@ -34,12 +34,8 @@ class SyncRequest {
         signal: request.signal,
         url: request.url,
 
-        // node-fetch
-        follow: nodeFetchOptions.follow,
-        timeout: nodeFetchOptions.timeout,
-        compress: nodeFetchOptions.compress,
-        size: nodeFetchOptions.size,
-        agent: nodeFetchOptions.agent
+        // custom
+        timeout: nodeFetchOptions.timeout
       },
       enumerable: false
     })
@@ -105,27 +101,12 @@ class SyncRequest {
     return this[_state].url
   }
 
-  // node-fetch properties
-  get follow () {
-    return this[_state].follow
-  }
-
+  // custom
   get timeout () {
     return this[_state].timeout
   }
 
-  get compress () {
-    return this[_state].compress
-  }
-
-  get size () {
-    return this[_state].size
-  }
-
-  get agent () {
-    return this[_state].agent
-  }
-
+  // methods
   clone () {
     checkBody(this)
     return new SyncRequest(this.url, this[_state])
@@ -140,9 +121,7 @@ class SyncRequest {
 
     const properties = {
       ...serializeRequest(this)[1],
-      agent: this.agent,
-      signal: this.signal,
-      url: this.url
+      signal: this.signal
     }
 
     return `Response ${util.formatWithOptions(options, properties)}`
@@ -188,12 +167,8 @@ function serializeRequest (request) {
       referrerPolicy: request.referrerPolicy,
       // signal: request.signal,
 
-      // node-fetch props
-      follow: request.follow,
-      timeout: request.timeout,
-      compress: request.compress,
-      size: request.size
-      // agent: request.agent
+      // custom
+      timeout: request.timeout
     }
   ]
 }

@@ -17,15 +17,20 @@ class FetchError extends Error {
 }
 
 const errors = {
+  Error: FetchError,
   TypeError
 }
 
 function deserializeError (name, init) {
-  if (name in errors) {
-    return new errors[name](...init)
-  } else {
-    return new FetchError(...init)
+  const constructor = errors[name] ?? FetchError
+  const cause = init.pop()
+  const error = new constructor(...init)
+
+  if (cause) {
+    error.cause = deserializeError(...cause)
   }
+
+  return error
 }
 
 module.exports = { FetchError, deserializeError }

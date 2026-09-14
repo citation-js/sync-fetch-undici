@@ -1,24 +1,25 @@
-# sync-fetch
-Synchronous wrapper around the Fetch API. Uses [`node-fetch`](https://github.com/bitinn/node-fetch) under the hood, and for some input-parsing code and test cases too.
+# sync-fetch-undici
+Synchronous wrapper around the Fetch API. Uses the builtin version of `fetch`, based on [`undici`](https://github.com/nodejs/undici).
+See [sync-fetch](https://npmjs.com/package/sync-fetch) for a similar package based on [`node-fetch`](https://github.com/node-fetch/node-fetch).
 
-[![npm](https://img.shields.io/npm/v/sync-fetch?style=flat-square)](https://npmjs.com/package/sync-fetch)
-[![npm monthly downloads](https://img.shields.io/npm/dm/sync-fetch?style=flat-square)](https://npm-stat.com/charts.html?package=sync-fetch)
+[![npm](https://img.shields.io/npm/v/sync-fetch-undici?style=flat-square)](https://npmjs.com/package/sync-fetch-undici)
+[![npm monthly downloads](https://img.shields.io/npm/dm/sync-fetch-undici?style=flat-square)](https://npm-stat.com/charts.html?package=sync-fetch-undici)
 
 ## Install
 
-    npm install sync-fetch
+    npm install sync-fetch-undici
 
 In the browser, a browserify bundle can be loaded from CDNs like unpkg.com.
 
 ```html
-<script src="https://unpkg.com/sync-fetch"></script>
-<script src="https://unpkg.com/sync-fetch@VERSION"></script>
+<script src="https://unpkg.com/sync-fetch-undici"></script>
+<script src="https://unpkg.com/sync-fetch-undici@VERSION"></script>
 ```
 
 ## Use
 
 ```js
-const fetch = require('sync-fetch')
+const fetch = require('sync-fetch-undici')
 
 const metadata = fetch('https://doi.org/10.7717/peerj-cs.214', {
   headers: {
@@ -33,9 +34,12 @@ const metadata = fetch('https://doi.org/10.7717/peerj-cs.214', {
 ### Node.js
 
   - Does not support `Stream` or `Blob` as input body since they cannot be read or serialized synchronously
-  - Does not support `FormData` as input body yet as it has no built-in method to be serialized
-  - Does not support the non-spec `agent` option as its value cannot be serialized
-  - Does not support non-standard `textConverted()` method on `SyncResponse` and `SyncRequest`
+  - Does not support `FormData` as input body yet as it can contain a `Blob`
+  - Does not support `signal` as it cannot be implemented synchronously; instead does support the non-standard
+    option `timeout` (a `number` of seconds)
+  - `undici` applies some parts of the specification more suited to browser usage; for example setting
+    the `Host` header or other ["forbidden request headers"](https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_request_header)
+    is not possible.
 
 ### Browser
 
@@ -46,4 +50,4 @@ const metadata = fetch('https://doi.org/10.7717/peerj-cs.214', {
     - `credentials` (but not `omit`)
     - (Non-spec) `timeout`
   - The non-standard `buffer()` and `textConverted()` methods are not supported
-  - CORS limitations apply, of course (note they may be stricter for synchronous requests)
+  - CORS limitations apply; note they may be stricter for synchronous requests

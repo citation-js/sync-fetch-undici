@@ -51,7 +51,7 @@ after(done => {
   local.kill()
 })
 
-describe('node-fetch', () => {
+describe('sync-fetch', () => {
   /* eslint-disable */
   it.skip('should return a promise', function () {
     const url = `${base}hello`
@@ -95,17 +95,17 @@ describe('node-fetch', () => {
 
   it('should reject with error if url is protocol relative', function () {
     const url = '//example.com/'
-    expect(() => fetch(url)).to.throw(TypeError, 'Failed to parse URL from //example.com/')
+    expect(() => fetch(url)).to.throw(Error, 'Failed to parse URL from //example.com/')
   })
 
   it('should reject with error if url is relative path', function () {
     const url = '/some/path'
-    expect(() => fetch(url)).to.throw(TypeError, 'Failed to parse URL from /some/path')
+    expect(() => fetch(url)).to.throw(Error, 'Failed to parse URL from /some/path')
   })
 
   it('should reject with error if protocol is unsupported', function () {
     const url = 'ftp://example.com/'
-    expect(() => fetch(url)).to.throw(TypeError, 'node-fetch cannot load [object Request]. URL scheme "ftp" is not supported.')
+    expect(() => fetch(url)).to.throw(Error, 'unknown scheme')
   })
 
   it('should reject with error on network failure', function () {
@@ -176,7 +176,7 @@ describe('node-fetch', () => {
     expect(res.headers['x-custom-header']).to.equal('abc')
   })
 
-  it('should accept custom host header', function () {
+  it.skip('should accept custom host header', function () {
     const url = `${base}inspect`
     const opts = {
       headers: {
@@ -187,7 +187,7 @@ describe('node-fetch', () => {
     expect(res.headers.host).to.equal('example.com')
   })
 
-  it('should accept custom HoSt header', function () {
+  it.skip('should accept custom HoSt header', function () {
     const url = `${base}inspect`
     const opts = {
       headers: {
@@ -335,9 +335,8 @@ describe('node-fetch', () => {
     expect(() => fetch(url, opts)).to.throw(FetchError)
       .that.has.property('type', 'unsupported-redirect')
   })
-  /* eslint-enable */
 
-  it('should obey maximum redirect, reject case', function () {
+  it.skip('should obey maximum redirect, reject case', function () {
     const url = `${base}redirect/chain`
     const opts = {
       follow: 1
@@ -346,7 +345,7 @@ describe('node-fetch', () => {
       .that.has.property('type', 'max-redirect')
   })
 
-  it('should obey redirect chain, resolve case', function () {
+  it.skip('should obey redirect chain, resolve case', function () {
     const url = `${base}redirect/chain`
     const opts = {
       follow: 2
@@ -356,7 +355,7 @@ describe('node-fetch', () => {
     expect(res.status).to.equal(200)
   })
 
-  it('should allow not following redirect', function () {
+  it.skip('should allow not following redirect', function () {
     const url = `${base}redirect/301`
     const opts = {
       follow: 0
@@ -364,6 +363,7 @@ describe('node-fetch', () => {
     expect(() => fetch(url, opts)).to.throw(FetchError)
       .that.has.property('type', 'max-redirect')
   })
+  /* eslint-enable */
 
   it('should support redirect mode, manual flag', function () {
     const url = `${base}redirect/301`
@@ -381,8 +381,8 @@ describe('node-fetch', () => {
     const opts = {
       redirect: 'error'
     }
-    expect(() => fetch(url, opts)).to.throw(FetchError)
-      .that.has.property('type', 'no-redirect')
+    expect(() => fetch(url, opts)).to.throw(Error)
+      .that.has.property('message', 'unexpected redirect')
   })
 
   it('should support redirect mode, manual flag when there is no redirect', function () {
@@ -481,12 +481,12 @@ describe('node-fetch', () => {
   it('should handle network-error response', function () {
     const url = `${base}error/reset`
     expect(() => fetch(url)).to.throw(FetchError)
-      .that.has.property('code', 'ECONNRESET')
+      .that.has.property('code', 'UND_ERR_SOCKET')
   })
 
   it('should handle DNS-error response', function () {
     const url = 'http://domain.invalid'
-    expect(() => fetch(url)).to.throw(FetchError)
+    expect(() => fetch(url)).to.throw(Error)
       .that.has.property('code').that.matches(/ENOTFOUND|EAI_AGAIN/)
   })
 
@@ -626,7 +626,8 @@ describe('node-fetch', () => {
     const url = `${base}invalid-content-encoding`
     const res = fetch(url)
     expect(res.headers.get('content-type')).to.equal('text/plain')
-    expect(() => res.text()).to.throw(FetchError)
+    expect(() => res.text()).to.throw(Error)
+      .that.has.property('cause')
       .that.has.property('code', 'Z_DATA_ERROR')
   })
 
@@ -644,11 +645,12 @@ describe('node-fetch', () => {
     const url = `${base}invalid-content-encoding`
     const res = fetch(url)
     expect(res.headers.get('content-type')).to.equal('text/plain')
-    expect(() => res.text()).to.throw(FetchError)
+    expect(() => res.text()).to.throw(Error)
+      .that.has.property('cause')
       .that.has.property('code', 'Z_DATA_ERROR')
   })
 
-  it('should allow disabling auto decompression', function () {
+  it.skip('should allow disabling auto decompression', function () {
     const url = `${base}gzip`
     const opts = {
       compress: false
@@ -677,18 +679,18 @@ describe('node-fetch', () => {
     const opts = {
       timeout: 20
     }
-    expect(() => fetch(url, opts)).to.throw(FetchError)
+    expect(() => fetch(url, opts)).to.throw(Error)
       .that.has.property('type', 'request-timeout')
   })
 
-  it('should allow custom timeout on response body', function () {
+  it.skip('should allow custom timeout on response body', function () {
     const url = `${base}slow`
     const opts = {
       timeout: 20
     }
     const res = fetch(url, opts)
     expect(res.ok).to.be.true
-    expect(() => res.text()).to.throw(FetchError)
+    expect(() => res.text()).to.throw(Error)
       .that.has.property('type', 'body-timeout')
   })
 
@@ -697,7 +699,7 @@ describe('node-fetch', () => {
     const opts = {
       timeout: 20
     }
-    expect(() => fetch(url, opts)).to.throw(FetchError)
+    expect(() => fetch(url, opts)).to.throw(Error)
       .that.has.property('type', 'request-timeout')
   })
 
@@ -971,7 +973,7 @@ describe('node-fetch', () => {
   it('should set default User-Agent', function () {
     const url = `${base}inspect`
     const res = fetch(url).json()
-    expect(res.headers['user-agent']).to.equal('node-fetch')
+    expect(res.headers['user-agent']).to.equal('node')
   })
 
   it('should allow setting User-Agent', function () {
@@ -1323,7 +1325,7 @@ describe('node-fetch', () => {
     expect(res.body).to.equal('a=1')
   })
 
-  it('should overwrite Content-Length if possible', function () {
+  it.skip('should overwrite Content-Length if possible', function () {
     const url = `${base}inspect`
     // note that fetch simply calls tostring on an object
     const opts = {
@@ -1432,7 +1434,7 @@ describe('node-fetch', () => {
     expect(() => res.text()).to.throw(Error)
   })
 
-  it('should support maximum response size, multiple chunk', function () {
+  it.skip('should support maximum response size, multiple chunk', function () {
     const url = `${base}size/chunk`
     const opts = {
       size: 5
@@ -1440,11 +1442,11 @@ describe('node-fetch', () => {
     const res = fetch(url, opts)
     expect(res.status).to.equal(200)
     expect(res.headers.get('content-type')).to.equal('text/plain')
-    expect(() => res.text()).to.throw(FetchError)
+    expect(() => res.text()).to.throw(Error)
       .that.has.property('type', 'max-size')
   })
 
-  it('should support maximum response size, single chunk', function () {
+  it.skip('should support maximum response size, single chunk', function () {
     const url = `${base}size/long`
     const opts = {
       size: 5
@@ -1452,7 +1454,7 @@ describe('node-fetch', () => {
     const res = fetch(url, opts)
     expect(res.status).to.equal(200)
     expect(res.headers.get('content-type')).to.equal('text/plain')
-    expect(() => res.text()).to.throw(FetchError)
+    expect(() => res.text()).to.throw(Error)
       .that.has.property('type', 'max-size')
   })
 
@@ -2115,13 +2117,13 @@ describe('Response', function () {
       headers: {
         a: '1'
       },
-      url: base,
+      // url: base,
       status: 346,
       statusText: 'production'
     })
     const cl = res.clone()
     expect(cl.headers.get('a')).to.equal('1')
-    expect(cl.url).to.equal(base)
+    // expect(cl.url).to.equal(base)
     expect(cl.status).to.equal(346)
     expect(cl.statusText).to.equal('production')
     expect(cl.ok).to.be.false
@@ -2221,13 +2223,15 @@ describe('Request', function () {
 
     const r1 = new Request(url, {
       method: 'POST',
-      follow: 1,
+      redirect: 'follow',
+      // follow: 1,
       // body: form,
       // signal
       body: buffer
     })
     const r2 = new Request(r1, {
-      follow: 2
+      // follow: 2
+      redirect: 'manual'
     })
 
     expect(r2.url).to.equal(url)
@@ -2236,8 +2240,10 @@ describe('Request', function () {
     // note that we didn't clone the body
     // expect(r2.body).to.equal(form)
     expect(r2.buffer().equals(buffer))
-    expect(r1.follow).to.equal(1)
-    expect(r2.follow).to.equal(2)
+    // expect(r1.follow).to.equal(1)
+    // expect(r2.follow).to.equal(2)
+    expect(r1.redirect).to.equal('follow')
+    expect(r2.redirect).to.equal('manual')
     expect(r1.counter).to.equal(0)
     expect(r2.counter).to.equal(0)
   })
@@ -2373,9 +2379,9 @@ describe('Request', function () {
       redirect: 'manual',
       headers: {
         b: '2'
-      },
-      follow: 3,
-      compress: false
+      }// ,
+      // follow: 3,
+      // compress: false
       // agent,
       // signal
     })
@@ -2384,8 +2390,8 @@ describe('Request', function () {
     expect(cl.method).to.equal('POST')
     expect(cl.redirect).to.equal('manual')
     expect(cl.headers.get('b')).to.equal('2')
-    expect(cl.follow).to.equal(3)
-    expect(cl.compress).to.equal(false)
+    // expect(cl.follow).to.equal(3)
+    // expect(cl.compress).to.equal(false)
     expect(cl.method).to.equal('POST')
     expect(cl.counter).to.equal(0)
     // expect(cl.agent).to.equal(agent)

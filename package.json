@@ -1,5 +1,5 @@
 {
-  "name": "sync-fetch",
+  "name": "sync-fetch-undici",
   "version": "0.6.0",
   "description": "Synchronous version of the Fetch API",
   "main": "index.js",
@@ -37,8 +37,6 @@
   },
   "homepage": "https://github.com/larsgw/sync-fetch#readme",
   "dependencies": {
-    "node-fetch": "^3.3.2",
-    "timeout-signal": "^2.0.0",
     "whatwg-mimetype": "^5.0.0"
   },
   "devDependencies": {

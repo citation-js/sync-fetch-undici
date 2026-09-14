@@ -28,11 +28,6 @@ class SyncResponse {
       const response = new Response(body)
       this.headers.append('content-type', response.headers.get('content-type'))
     }
-
-    // node-fetch compatibility
-    if (options.url) {
-      this[_state].url = options.url
-    }
   }
 
   get [Symbol.toStringTag] () {
