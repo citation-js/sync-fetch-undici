@@ -1,3 +1,11 @@
+# [0.7.0](https://github.com/larsgw/sync-fetch/compare/v0.6.0...v0.7.0) (2026-09-15)
+
+* chore!: drop Node.js 20 support ([a618e33](https://github.com/larsgw/sync-fetch/commit/a618e33aa6305aef13c8a54721203f7974fffd0b))
+
+### BREAKING CHANGES
+
+* drop support for Node.js 20; upgrade to 22.12 or above
+
 # [0.6.0](https://github.com/larsgw/sync-fetch/compare/v0.6.0-2...v0.6.0) (2026-01-01)
 
 
