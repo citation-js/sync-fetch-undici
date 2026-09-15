@@ -3,6 +3,15 @@
 
 'use strict'
 
+const UNDICI_7_20_0 = (function () {
+  if (!process.versions.undici) {
+    return false
+  }
+
+  const [major, minor] = process.versions.undici.split('.').map(part => parseInt(part))
+  return major > 7 || (major === 7 && minor >= 20)
+})()
+
 // test tools
 const chai = require('chai')
 const chaiIterator = require('chai-iterator')
@@ -256,6 +265,8 @@ describe('sync-fetch', () => {
   })
 
   it('should follow PATCH request redirect code 301 with PATCH', function () {
+    if (!UNDICI_7_20_0) { this.skip() }
+
     const url = `${base}redirect/301`
     const opts = {
       method: 'PATCH',
@@ -284,6 +295,8 @@ describe('sync-fetch', () => {
   })
 
   it('should follow PATCH request redirect code 302 with PATCH', function () {
+    if (!UNDICI_7_20_0) { this.skip() }
+
     const url = `${base}redirect/302`
     const opts = {
       method: 'PATCH',
@@ -312,6 +325,8 @@ describe('sync-fetch', () => {
   })
 
   it('should follow PATCH request redirect code 307 with PATCH', function () {
+    if (!UNDICI_7_20_0) { this.skip() }
+
     const url = `${base}redirect/307`
     const opts = {
       method: 'PATCH',

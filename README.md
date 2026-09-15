@@ -40,6 +40,9 @@ const metadata = fetch('https://doi.org/10.7717/peerj-cs.214', {
   - `undici` applies some parts of the specification more suited to browser usage; for example setting
     the `Host` header or other ["forbidden request headers"](https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_request_header)
     is not possible.
+  - `undici` versions below `7.20.0` contain [a bug](https://github.com/nodejs/undici/issues/4789) breaking
+    redirects of `POST` and `PATCH` requests with request bodies. The patched version of `undici` is shipped
+    starting with Node.js v24.14.0; no backport for v22 has been made.
 
 ### Browser
 
